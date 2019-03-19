@@ -42,7 +42,7 @@ class Display
         @board.grid.each_with_index do |row, i| 
             print_line = "" 
             row.each_with_index do |square, j| 
-                current_square = " " + square.symbol.to_s +  " " 
+                current_square = " " + square.symbol+  " " 
                 if [i, j] == self.cursor.cursor_pos
                     if self.cursor.selected
                         current_square = current_square.green

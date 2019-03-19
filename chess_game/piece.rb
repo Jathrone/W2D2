@@ -22,9 +22,18 @@ class Piece
     end
 
     def to_s(emoji)
-        return emoji
+        return emoji.to_s
     end
 
+    def valid_moves
+        moves = []
+        self.moves.each do |end_pos| 
+            dup_board = self.board.dup
+            dup_board.move_piece(self.piece_pos, end_pos)
+            moves << end_pos if !dup_board.in_check?(self.color)
+        end 
+        return moves 
+    end 
 end
 
 module Slideable
