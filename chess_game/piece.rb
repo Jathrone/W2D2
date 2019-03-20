@@ -22,7 +22,8 @@ class Piece
     end
 
     def to_s(emoji)
-        return emoji.to_s
+        return emoji.to_s.colorize(:color => :white) if color == 'white'
+        return emoji.to_s.colorize(:color => :black) if color == 'black'
     end
 
     def pos=(val)
@@ -33,7 +34,7 @@ class Piece
         moves = []
         self.moves.each do |end_pos| 
             dup_board = self.board.dup
-            dup_board.move_piece(self.piece_pos, end_pos)
+            dup_board.move_piece!(self.color, self.piece_pos, end_pos)
             moves << end_pos if !dup_board.in_check?(self.color)
         end 
         return moves 
@@ -188,6 +189,8 @@ end
 
 class Pawn < Piece
 
+    attr_accessor :first_move
+
     def initialize(color, board, piece_pos)
         super
         @first_move = true
@@ -213,7 +216,7 @@ class Pawn < Piece
         possible_pos = increment_direction(self.piece_pos, forward_movement)
         if valid_pos?(possible_pos)
             possible_moves << possible_pos
-            if first_move
+            if self.first_move
                 possible_pos = increment_direction(possible_pos, forward_movement)
                 if valid_pos?(possible_pos)
                     possible_moves << possible_pos
@@ -222,7 +225,7 @@ class Pawn < Piece
         end
         capture_movement.each do |direction|
             possible_pos = increment_direction(self.piece_pos, direction)
-            if self.board[possible_pos] && !self.board[possible_pos]==NullPiece.instance && self.board[possible_pos].color != self.color
+            if self.board.valid_pos?(possible_pos) && (!self.board[possible_pos].is_a?(NullPiece)) && (self.board[possible_pos].color != self.color)
                 possible_moves << possible_pos
             end
         end
@@ -230,7 +233,7 @@ class Pawn < Piece
     end 
 
     def having_moved
-        first_move = false
+        self.first_move = false
     end
 
     def symbol
@@ -241,6 +244,9 @@ class Pawn < Piece
         end
     end
 
-    private
-    attr_reader :first_move
+    def pos=(val)
+        @piece_pos = val
+        self.having_moved
+    end
+
 end

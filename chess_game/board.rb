@@ -1,6 +1,11 @@
 require_relative "piece.rb"
 require 'byebug'
 
+class PieceClashError < StandardError; end
+class NullPieceError < StandardError; end
+class WrongColorError < StandardError; end
+class InvalidMoveError < StandardError; end
+
 class Board 
 
     attr_reader :grid, :pieces_hash
@@ -73,13 +78,26 @@ class Board
         end
     end 
 
-    def move_piece(start_pos, end_pos)
+    def move_piece(color, start_pos, end_pos)
         raise PieceClashError if self_clash?(start_pos, end_pos) 
         raise NullPieceError if self[start_pos] == NullPiece.instance
+        raise WrongColorError if self[start_pos].color != color
+        raise InvalidMoveError if !self[start_pos].valid_moves.include?(end_pos)
         self[start_pos].pos=end_pos
         self[end_pos] = self[start_pos]
         self[start_pos] = NullPiece.instance
     end 
+
+    def move_piece!(color, start_pos, end_pos)
+        raise PieceClashError if self_clash?(start_pos, end_pos) 
+        raise NullPieceError if self[start_pos] == NullPiece.instance
+        raise WrongColorError if self[start_pos].color != color
+        self[start_pos].pos=end_pos
+        self[end_pos] = self[start_pos]
+        self[start_pos] = NullPiece.instance
+    end 
+
+
 
     def [](pos)
         begin

@@ -98,6 +98,10 @@ class Cursor
   end
 
   def toggle_selected
-    self.selected = !selected
+    if !self.selected
+      self.selected = cursor_pos
+    else
+      self.selected = false
+    end
   end
 end

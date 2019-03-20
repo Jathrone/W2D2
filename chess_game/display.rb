@@ -43,12 +43,21 @@ class Display
             print_line = "" 
             row.each_with_index do |square, j| 
                 current_square = " " + square.symbol+  " " 
+                if (i+j)%2 == 0
+                    current_square = current_square.colorize(:background => :light_black)
+                else
+                    current_square = current_square.colorize(:background => :light_cyan)
+                end
                 if [i, j] == self.cursor.cursor_pos
-                    if self.cursor.selected
-                        current_square = current_square.green
-                    else
-                        current_square = current_square.red 
+                    current_square = current_square.colorize(:color => :red)
+                end
+                if self.cursor.selected 
+                    if [i, j] == self.cursor.selected
+                        current_square = current_square.colorize(:background => :light_magenta)
+                    elsif !board[self.cursor.selected].is_a?(NullPiece) && board[self.cursor.selected].valid_moves.include?([i, j])
+                        current_square = current_square.colorize(:background => :light_red)
                     end
+
                 end 
                 print_line += current_square
             end
@@ -68,12 +77,12 @@ class Display
 end 
 
 
-if __FILE__ == $PROGRAM_NAME
-    display = Display.new
-    display.board.move_piece([6,5], [5,5])
-    display.board.move_piece([1,4], [3,4])
-    display.board.move_piece([6,6], [4,6])
-    display.board.move_piece([0,3], [4,7])
-    display.render
-    puts display.board.in_check?('white')
-end
+# if __FILE__ == $PROGRAM_NAME
+#     display = Display.new
+#     display.board.move_piece([6,5], [5,5])
+#     display.board.move_piece([1,4], [3,4])
+#     display.board.move_piece([6,6], [4,6])
+#     display.board.move_piece([0,3], [4,7])
+#     display.render
+#     puts display.board.in_check?('white')
+# end
