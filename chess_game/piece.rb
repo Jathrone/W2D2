@@ -74,7 +74,7 @@ module Stepable
         possible_moves = [] 
         move_diffs.each do |direction| 
             possible_pos = increment_direction(piece_pos, direction)
-            if self.valid_pos(possible_pos)
+            if self.valid_pos?(possible_pos)
                 possible_moves << possible_pos
             elsif self.board[possible_pos] && (self.board[possible_pos].color != self.color)
                 possible_moves << possible_pos
@@ -171,7 +171,7 @@ class King < Piece
 end 
 
 class NullPiece 
-    attr_reader :symbol
+    attr_reader :symbol, :color
 
     include Singleton 
 
@@ -204,7 +204,7 @@ class Pawn < Piece
             return [[1, -1], [1, 1]]
         end
     end
-    def move 
+    def moves
         possible_moves = []
         possible_pos = increment_direction(self.piece_pos, forward_movement)
         if valid_pos?(possible_pos)
@@ -226,7 +226,7 @@ class Pawn < Piece
     end 
 
     def having_moved
-        @first_move = false
+        first_move = false
     end
 
     def symbol
@@ -236,4 +236,7 @@ class Pawn < Piece
             return to_s("♟") 
         end
     end
+
+    private
+    attr_reader :first_move
 end
