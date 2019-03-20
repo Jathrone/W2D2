@@ -66,3 +66,14 @@ class Display
         end  
     end 
 end 
+
+
+if __FILE__ == $PROGRAM_NAME
+    display = Display.new
+    display.board.move_piece([6,5], [5,5])
+    display.board.move_piece([1,4], [3,4])
+    display.board.move_piece([6,6], [4,6])
+    display.board.move_piece([0,3], [4,7])
+    display.render
+    puts display.board.in_check?('white')
+end

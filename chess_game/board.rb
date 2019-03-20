@@ -59,7 +59,7 @@ class Board
                 end
             end
         else
-            source_board.each_with_index do |row, i|
+            source_board.grid.each_with_index do |row, i|
                 row.each_with_index do |piece, j|
                     if piece == NullPiece.instance
                         self[[i, j]] = NullPiece.instance
@@ -76,14 +76,20 @@ class Board
     def move_piece(start_pos, end_pos)
         raise PieceClashError if self_clash?(start_pos, end_pos) 
         raise NullPieceError if self[start_pos] == NullPiece.instance
+        self[start_pos].pos=end_pos
         self[end_pos] = self[start_pos]
         self[start_pos] = NullPiece.instance
     end 
 
     def [](pos)
-        debugger
-        x, y = pos
-        @grid[x][y]
+        begin
+            x, y = pos
+            @grid[x][y]
+        rescue NoMethodError
+            puts pos
+            puts "Ahhh you have caught me at last"
+        end
+
     end
 
     def []=(pos, val)
@@ -114,14 +120,15 @@ class Board
                 pieces << square if square.color == color
             end
         end
-        pieces 
+        return pieces 
     end
 
 
     def in_check?(color)
         other_color = opp_color(color) 
         king_pos = pieces_hash[color]["King"][0].piece_pos
-        pieces_on_board(other_color).each do |piece|
+        temp_var_pieces = pieces_on_board(other_color)
+        temp_var_pieces.each do |piece|
             if piece.moves.include?(king_pos)
                 return true 
             end 

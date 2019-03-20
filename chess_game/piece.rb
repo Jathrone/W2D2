@@ -18,11 +18,15 @@ class Piece
     end
 
     def valid_pos?(pos)
-       return board.valid_pos?(pos) && self.board[pos] != NullPiece.instance
+        return board.valid_pos?(pos) && (self.board[pos]==NullPiece.instance)
     end
 
     def to_s(emoji)
         return emoji.to_s
+    end
+
+    def pos=(val)
+        @piece_pos = val
     end
 
     def valid_moves
@@ -37,9 +41,9 @@ class Piece
 end
 
 module Slideable
-    private
-    HORIZONTAL_DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]]
-    DIAGONAL_DIRS = [[1,1],[1,-1],[-1,1],[-1,-1]]
+
+    HORIZONTAL_DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]].freeze
+    DIAGONAL_DIRS = [[1,1],[1,-1],[-1,1],[-1,-1]].freeze
     public
     def horizontal_dirs
         HORIZONTAL_DIRS
@@ -61,7 +65,7 @@ module Slideable
                 possible_moves << possible_pos
                 possible_pos = increment_direction(possible_pos, direction)
             end 
-            if self.board[possible_pos] && (self.board[possible_pos].color != self.color)
+            if self.board.valid_pos?(possible_pos) && (self.board[possible_pos].color != self.color)
                 possible_moves << possible_pos
             end
         end
@@ -76,7 +80,7 @@ module Stepable
             possible_pos = increment_direction(piece_pos, direction)
             if self.valid_pos?(possible_pos)
                 possible_moves << possible_pos
-            elsif self.board[possible_pos] && (self.board[possible_pos].color != self.color)
+            elsif self.board.valid_pos?(possible_pos) && (self.board[possible_pos].color != self.color)
                 possible_moves << possible_pos
             end 
         end 
@@ -190,7 +194,7 @@ class Pawn < Piece
     end
 
     def forward_movement
-        if self.color == "black"
+        if self.color == "white"
             return [-1, 0]
         else
             return [1, 0]
@@ -198,7 +202,7 @@ class Pawn < Piece
     end
 
     def capture_movement
-        if self.color == 'black'
+        if self.color == 'white'
             return [[-1, -1], [-1, 1]]
         else
             return [[1, -1], [1, 1]]
@@ -218,7 +222,7 @@ class Pawn < Piece
         end
         capture_movement.each do |direction|
             possible_pos = increment_direction(self.piece_pos, direction)
-            if self.board[possible_pos] && self.board[possible_pos] != NullPiece.instance && self.board[possible_pos].color != self.color
+            if self.board[possible_pos] && !self.board[possible_pos]==NullPiece.instance && self.board[possible_pos].color != self.color
                 possible_moves << possible_pos
             end
         end
